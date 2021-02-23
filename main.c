@@ -1,50 +1,70 @@
 #include <stdio.h>
 #include <assert.h>
 
+//enumerate major and minor colors
 enum MajorColor {WHITE, RED, BLACK, YELLOW, VIOLET};
 enum MinorColor {BLUE, ORANGE, GREEN, BROWN, SLATE};
 
-const char* MajorColorNames[] = {
-    "White", "Red", "Black", "Yellow", "Violet"
-};
-int numberOfMajorColors =
-    sizeof(MajorColorNames) / sizeof(MajorColorNames[0]);
-const char* MinorColorNames[] = {
-    "Blue", "Orange", "Green", "Brown", "Slate"
-};
-const int MAX_COLORPAIR_NAME_CHARS = 16;
-int numberOfMinorColors =
-    sizeof(MinorColorNames) / sizeof(MinorColorNames[0]);
-
+//structure to store minor and major colors
 typedef struct {
     enum MajorColor majorColor;
     enum MinorColor minorColor;
-} ColorPair;
+} ColorPair; 
 
-void ColorPairToString(const ColorPair* colorPair, char* buffer) {
-    sprintf(buffer, "%s %s",
-        MajorColorNames[colorPair->majorColor],
-        MinorColorNames[colorPair->minorColor]);
+//Major colors for print
+const char* MajorColorNames[] = {
+    "White", "Red", "Black", "Yellow", "Violet"
+};
+
+//Calculate number of major colors
+int numberOfMajorColors = sizeof(MajorColorNames) / sizeof(MajorColorNames[0]);
+
+//you cannot change the minor color value
+const char* MinorColorNames[] = 
+{
+   "Blue", "Orange", "Green", "Brown", "Slate"
+};
+
+//Maximum and minimum number-color pairs
+const int MAX_COLORPAIR_NAME_CHARS = 25;
+const int MIN_COLORPAIR_NAME_CHARS = 1;
+
+
+//Minor color number
+int numberOfMinorColors = sizeof(MinorColorNames) / sizeof(MinorColorNames[0]);
+
+//find the sprintf function, is this printing the reference document
+//int sprintf (char *string, const char *form, … );
+
+void ColorPairToString(const ColorPair* colorPair, char* buffer) 
+{
+   sprintf(buffer, "%s %s", MajorColorNames[colorPair->majorColor], MinorColorNames[colorPair->minorColor]);
 }
 
-ColorPair GetColorFromPairNumber(int pairNumber) {
+ColorPair GetColorFromPairNumber(int pairNumber)
+{	if (pairNumber > MAX_COLORPAIR_NAME_CHARS || pairNumber < MIN_COLORPAIR_NAME_CHARS) //hidden req ?  to ensure invalid number is not entered
+	{
+		printf(" Come back when sober :D "); //printf comment added on a light note, feedback if not to be done so.
+	}
+	else
+	{
     ColorPair colorPair;
     int zeroBasedPairNumber = pairNumber - 1;
-    colorPair.majorColor = 
-        (enum MajorColor)(zeroBasedPairNumber / numberOfMinorColors);
-    colorPair.minorColor =
-        (enum MinorColor)(zeroBasedPairNumber % numberOfMinorColors);
+    colorPair.majorColor = (enum MajorColor)(zeroBasedPairNumber / numberOfMinorColors);
+    colorPair.minorColor = (enum MinorColor)(zeroBasedPairNumber % numberOfMinorColors);
     return colorPair;
+	}
 }
 
-int GetPairNumberFromColor(const ColorPair* colorPair) {
-    return colorPair->majorColor * numberOfMinorColors +
-            colorPair->minorColor + 1;
+//function to obtain number pair with colorpair as input
+
+int GetPairNumberFromColor(const ColorPair* colorPair) 
+{
+    return (colorPair->majorColor * numberOfMinorColors + colorPair->minorColor + 1);
 }
 
-void testNumberToPair(int pairNumber,
-    enum MajorColor expectedMajor,
-    enum MinorColor expectedMinor)
+//test to check number pair matches color pair
+void testNumberToPair(int pairNumber, enum MajorColor expectedMajor, enum MinorColor expectedMinor)
 {
     ColorPair colorPair = GetColorFromPairNumber(pairNumber);
     char colorPairNames[MAX_COLORPAIR_NAME_CHARS];
@@ -54,10 +74,8 @@ void testNumberToPair(int pairNumber,
     assert(colorPair.minorColor == expectedMinor);
 }
 
-void testPairToNumber(
-    enum MajorColor major,
-    enum MinorColor minor,
-    int expectedPairNumber)
+//test to check color pair matches number pair
+void testPairToNumber(enum MajorColor major, enum MinorColor minor, int expectedPairNumber)
 {
     ColorPair colorPair;
     colorPair.majorColor = major;
@@ -67,12 +85,31 @@ void testPairToNumber(
     assert(pairNumber == expectedPairNumber);
 }
 
-int main() {
+// function to print the color pair - number pair as a reference manual
+void display_reference_manual()
+{
+	ColorPair Pair;
+	int numberpair = 1;
+	char colorPairNames[MAX_COLORPAIR_NAME_CHARS];
+	printf(" PAIRNUMBER \t\t\t\t\t MAJORCOLOR-MINORCOLOR \n");
+	while (numberpair <= MAX_COLORPAIR_NAME_CHARS)
+	{
+		ColorPair Pair = GetColorFromPairNumber(numberpair);
+    	ColorPairToString(&Pair, colorPairNames);
+		printf(" %d \t\t\t\t\t %s\n ",numberpair,colorPairNames);
+		numberpair++;
+		
+	}
+	
+}
+int main() 
+{
     testNumberToPair(4, WHITE, BROWN);
     testNumberToPair(5, WHITE, SLATE);
 
     testPairToNumber(BLACK, ORANGE, 12);
     testPairToNumber(VIOLET, SLATE, 25);
-
+	display_reference_manual(); // print reference manual of number pair - color pair
     return 0;
 }
+
